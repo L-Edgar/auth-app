@@ -1,0 +1,158 @@
+.ctr {
+  height: 100vh;
+  width: 100vw;
+  max-width: 100%;
+  background-color: #f0f4f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ctr > div {
+  background-color: #fff;
+  box-shadow: 0px 0px 3px 3px rgba(0, 0, 0, 0.05);
+  width: 850px;
+  height: 450px;
+  border-radius: 30px;
+  display: flex;
+  padding: 20px 0px;
+}
+.left_sign_in {
+  flex: 1.2;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+.left_sign_in > div:first-child {
+  margin: 48px 0px 20px 32px;
+}
+.left_sign_in > div:nth-child(2) {
+  margin: 10px 0px 5px 36px;
+  font-size: 36px;
+  font-weight: bold;
+}
+.left_sign_in > div:nth-child(3) {
+  margin: 0px 0px 20px 36px;
+  font-size: 18px;
+}
+.left_sign_in img {
+  height: 100px;
+  width: 100px;
+  object-fit: contain;
+}
+.right_sign_in {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.account_center {
+  width: 85%;
+}
+
+.account_center img {
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+}
+.account_center > div:first-child {
+  font-weight: 600;
+  font-size: 24px;
+}
+.account_center > div:nth-child(2) {
+  display: flex;
+  margin: 32px 0px;
+  padding: 20px 0px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.account_center > div:nth-child(2) > div:nth-child(2) {
+  margin-left: 20px;
+}
+.account_center > div:nth-child(2) > div:nth-child(2) > div:first-child {
+  font-weight: 500;
+  font-size: 20px;
+}
+.account_center > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) {
+  font-size: 14px;
+}
+
+.continue_btn {
+  width: 100%;
+  background-color: #70be46;
+  margin-top: 32px;
+  text-transform: capitalize;
+}
+.continue_btn:hover {
+  background-color: #70be46;
+  opacity: 0.9;
+}
+
+.auth_links {
+  position: absolute;
+  bottom: 0px;
+}
+
+.auth_links > a {
+  font-size: 10px;
+}
+.auth_links > a:hover {
+  text-decoration: underline;
+}
+.auth_links > a:not(:last-child) {
+  margin-right: 15px;
+}
+
+/*
+ *
+ *
+ * viewport responsive styles - start
+ *****/
+@media screen and (max-width: 1400px) {
+  /* none for now */
+}
+@media screen and (max-width: 1200px) {
+  /* none for now */
+}
+@media screen and (max-width: 992px) {
+  .ctr {
+    align-items: flex-start;
+    background-color: #fff;
+  }
+  .ctr > div {
+    width: 100%;
+    background-color: #fff;
+    box-shadow: none;
+    height: 450px;
+    border-radius: 0px;
+    padding: 0px;
+    margin-top: 100px;
+  }
+}
+@media screen and (max-width: 768px) {
+  .ctr > div {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: fit-content;
+  }
+  .left_sign_in {
+    border-right: none;
+    text-align: center;
+  }
+  .right_sign_in {
+    padding: 50px 0px;
+  }
+}
+@media screen and (max-width: 576px) {
+  /* none for now */
+}
+@media screen and (max-width: 320px) {
+  /* none for now */
+}
+
+/**
+ *
+ *viewport responsive styles - end
+ *
+ ****/
