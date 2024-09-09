@@ -12,6 +12,7 @@ export interface user extends Model {
   auth: string;
   phone: string;
   role: "user" | "admin";
+  profile_picture: string;
   refresh_token: string;
 }
 
@@ -33,6 +34,7 @@ const User = sequelize.define<user>(
     auth: { type: DataTypes.STRING },
     phone: { type: DataTypes.STRING },
     role: { type: DataTypes.STRING, defaultValue: "user" },
+    profile_picture: { type: DataTypes.STRING, defaultValue: "N/A" },
     refresh_token: { type: DataTypes.STRING, defaultValue: "N/A" },
   },
   {

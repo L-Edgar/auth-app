@@ -4,6 +4,10 @@ const { Op } = require("sequelize");
 import User from "../../db/models/index";
 import Otp from "../../db/models/otp";
 import nodemailer from "nodemailer";
+// import uploadMedia from "../../lib/index";
+import multer, { Multer } from "multer";
+import path from "path";
+// import axios from "axios";
 // import crypto from "crypto";
 import {
   verifyPhone,
@@ -11,7 +15,6 @@ import {
   tokenRefresh,
   verifyAccessToken,
 } from "../../lib/index";
-import { where } from "sequelize";
 const server: Express = express();
 const cryptoJs = require("crypto-js");
 const jwt = require("jsonwebtoken");
@@ -20,7 +23,7 @@ const jwt = require("jsonwebtoken");
   get user basing on user id
 */
 server.get(
-  "/single/:user_id",
+  "/single/user/:user_id",
   // verifyAccessToken,
   async (req: Request, res: Response) => {
     const user_id = req.params.user_id;
@@ -50,6 +53,80 @@ server.get(
     }
   }
 );
+
+/*
+
+get a user by kanlyte_id. 
+
+*/
+
+server.get("/single/id/:kanlyte_id", async (req: Request, res: Response) => {
+  const kanlyte_id = req.params.kanlyte_id;
+
+  try {
+    const user = await User.findOne({
+      where: { kanlyte_id: kanlyte_id },
+    });
+    if (user) {
+      const forward_result: ResultObj = {
+        result: user,
+        status: true,
+        reason: "User found",
+      };
+      res.json(forward_result);
+    } else {
+      const forward_result: ResultObj = {
+        status: false,
+        reason: "User not found",
+      };
+      res.json(forward_result);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    const forward_result: ResultObj = {
+      status: false,
+      reason: "Server error",
+    };
+    res.json(forward_result);
+  }
+});
+
+/**
+ *
+ * get all users
+ */
+
+server.get(
+  "/all/user",
+  verifyAccessToken,
+  async (req: Request, res: Response) => {
+    try {
+      const users = await User.findAll();
+      if (users && users.length > 0) {
+        const forward_result: ResultObj = {
+          result: users,
+          status: true,
+          reason: "Users found",
+        };
+        res.json(forward_result);
+      } else {
+        const forward_result: ResultObj = {
+          status: false,
+          reason: "No users found",
+        };
+        res.json(forward_result);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      const forward_result: ResultObj = {
+        status: false,
+        reason: "Server error",
+      };
+      res.json(forward_result);
+    }
+  }
+);
+
 /*
  * update user data
  *
@@ -187,7 +264,6 @@ server.delete(
       if (user) {
         await user.destroy();
         const forward_result: ResultObj = {
-          result: user,
           status: true,
           reason: "User destroyed",
         };
@@ -517,5 +593,82 @@ server.get("/all/otp/:user_id", async (req: Request, res: Response) => {
     res.json(forward_result);
   }
 });
+
+/***
+ * handling user profile....
+ * since we already have N/A in the db, we shall only write the put route.
+ * so, in front end they will check if user prfile = N/A then they display an avator
+ *  else display the image in the db.
+ *
+ * ***/
+
+const storage = multer.diskStorage({
+  destination: (req: Request, file: any, cb: any) => {
+    cb(null, "uploads/"); // Folder where files will be stored
+  },
+  filename: (req: Request, file: any, cb: any) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+// File filter to accept only certain file types
+const fileFilter = (req: Request, file: any, cb: any) => {
+  const allowedTypes = /jpeg|jpg|png/;
+  const extname = allowedTypes.test(
+    path.extname(file.originalname).toLowerCase()
+  );
+  const mimetype = allowedTypes.test(file.mimetype);
+  if (mimetype && extname) {
+    return cb(null, true);
+  } else {
+    cb(new Error("Only .jpeg, .jpg and .png files are allowed"));
+  }
+};
+
+const uploadMedia: Multer = multer({ storage, fileFilter });
+
+server.put(
+  "/user/profile",
+  verifyAccessToken,
+  uploadMedia.single("profilePicture"),
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.body;
+      const user = await User.findByPk(id);
+
+      if (!user) {
+        return res.status(404).json({
+          status: false,
+          reason: "User not found",
+        });
+      }
+      // Get the path of the uploaded file
+      const { path: profilePicture } = req.file || {};
+
+      if (profilePicture) {
+        // Update the user profile with the picture URL
+        user.profile_picture = profilePicture;
+        await user.save();
+
+        return res.json({
+          status: true,
+          reason: "Profile updated successfully",
+          result: user,
+        });
+      } else {
+        return res.status(400).json({
+          status: false,
+          reason: "Profile picture not provided",
+        });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      return res.status(500).json({
+        status: false,
+        reason: "Server error",
+      });
+    }
+  }
+);
 
 module.exports = server;

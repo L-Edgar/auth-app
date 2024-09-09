@@ -8,6 +8,7 @@ import { Button, CircularProgress, TextField } from "@mui/material";
 import Cookies from "js-cookie";
 import { end_point } from "@/lib/api";
 import { return_user_to_app } from "@/lib/functions";
+import { error } from "console";
 
 export default () => {
   const [state, set_state] = useState<{
@@ -26,6 +27,9 @@ export default () => {
   useEffect(() => {
     if (Cookies.get("kusr") && Cookies.get("auth_id"))
       window.location.replace("/");
+    else{
+      console.log("An error occured")
+    }
   }, []);
 
   /**
@@ -59,6 +63,7 @@ export default () => {
             check_error: true,
             reason: "Wrong Details",
           });
+          
 
           setTimeout(() => {
             set_state({

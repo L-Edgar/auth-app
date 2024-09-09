@@ -33,6 +33,7 @@ export default () => {
         access: Cookies.get("kusr"),
       });
     } else {
+      console.log("An error occured")
       window.location.replace("/sign_in");
     }
   }, []);

@@ -4,7 +4,8 @@ const { ACCESS_SECRET, REFRESH_SECRET, ENC_REFRESH_SECRET } = process.env;
 const jwt = require("jsonwebtoken");
 import { VerifyErrors, JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-
+import multer, { Multer } from "multer";
+import path from "path";
 //sequalize connection file
 const sequelize = new Sequelize({
   dialect: "mysql",
@@ -230,4 +231,39 @@ export const tokenRefresh = (
     res.status(500).json(forward_result);
   }
 };
+
+/**
+ *
+ *
+ * Method for storing the profile picture
+ *
+ *
+ *
+ **/
+// Configure storage
+const storage = multer.diskStorage({
+  destination: (req: Request, file: any, cb: any) => {
+    cb(null, "uploads/"); // Folder where files will be stored
+  },
+  filename: (req: Request, file: any, cb: any) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+// File filter to accept only certain file types
+const fileFilter = (req: Request, file: any, cb: any) => {
+  const allowedTypes = /jpeg|jpg|png/;
+  const extname = allowedTypes.test(
+    path.extname(file.originalname).toLowerCase()
+  );
+  const mimetype = allowedTypes.test(file.mimetype);
+  if (mimetype && extname) {
+    return cb(null, true);
+  } else {
+    cb(new Error("Only .jpeg, .jpg and .png files are allowed"));
+  }
+};
+
+export const uploadMedia: Multer = multer({ storage, fileFilter });
+
 export default sequelize;
